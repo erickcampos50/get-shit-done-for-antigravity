@@ -1,0 +1,286 @@
+# Catálogo de Todos os Tipos de Campo do Corteza
+# Use este arquivo como referência para escolher e configurar o tipo certo.
+# Cada campo tem o bloco config completo — copie inteiro e ajuste.
+
+# ── CONFIG BASE (obrigatório em TODOS os campos) ──────────────────────────────
+# config:
+#   dal:
+#     encodingstrategy: null
+#   privacy:
+#     sensitivitylevelid: 0
+#     usagedisclosure: ""
+#   recordrevisions:
+#     skip: false
+# expressions:
+#   disabledefaultvalidators: false
+#   disabledefaultformatters: false
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── 1. STRING — Texto ─────────────────────────────────────────────────────────
+# Uso: nomes, códigos, títulos, identificadores, textos curtos
+
+# Variante A: Linha única (padrão)
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: String
+  label: Nome
+  name: Name
+  place: 0
+  # options: {}  ← sem options para linha única
+
+# Variante B: Múltiplas linhas (descrições, observações)
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: String
+  label: Descrição
+  name: Description
+  place: 0
+  options:
+    multiLine: true
+
+# Variante C: Rich Text / Editor WYSIWYG (corpos de e-mail, artigos, relatórios)
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: String
+  label: Conteúdo
+  name: Content
+  place: 0
+  options:
+    multiLine: true
+    useRichTextEditor: true   # ← habilita editor WYSIWYG
+
+# ── 2. NUMBER — Número ────────────────────────────────────────────────────────
+# Uso: quantidades, valores monetários, percentuais, tempo
+
+# Variante A: Monetário
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: Number
+  label: Custo
+  name: Cost
+  place: 0
+  options:
+    format: "0.00"
+    prefix: "R$ "       # aparece antes do número
+    precision: 2         # casas decimais
+
+# Variante B: Com sufixo (horas, percentual)
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: Number
+  label: Tempo Gasto
+  name: TimeSpent
+  place: 0
+  options:
+    format: "0.00"
+    suffix: " hora(s)"  # aparece depois do número
+    precision: 2
+
+# ── 3. BOOL — Verdadeiro/Falso ────────────────────────────────────────────────
+# Uso: flags, checkboxes (ativo/inativo, publicado/rascunho, escalado/normal)
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: Bool
+  label: Ativo
+  name: IsActive
+  place: 0
+  options:
+    trueLabel: "Sim"    # texto exibido quando true
+    falseLabel: "Não"   # texto exibido quando false
+
+# ── 4. SELECT — Lista de Opções ───────────────────────────────────────────────
+# Uso: Status, Tipo, Categoria, Prioridade — qualquer conjunto FIXO de opções
+# REGRA: se existem opções fixas e conhecidas → SEMPRE use Select, não String
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: Select
+  label: Status
+  name: Status
+  place: 0
+  options:
+    selectType: default       # sempre "default" (não "multi" — use multi: true no campo para múltiplos)
+    options:
+      - text: "Opção A"       # rótulo exibido ao usuário
+        value: option_a       # valor salvo no banco (use snake_case ou sem acentos)
+      - text: "Opção B"
+        value: option_b
+      - text: "Opção C"
+        value: option_c
+
+# ── 5. RECORD — Relacionamento (FK para outro módulo) ─────────────────────────
+# Uso: quando um registro pertence a outro (ex: OS pertence a Equipamento)
+
+# Variante A: Seleção única (FK simples)
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: Record
+  label: Equipamento
+  name: EquipamentoId          # convenção: NomeModuloId
+  place: 0
+  options:
+    module: Equipamento         # handle do módulo referenciado (PascalCase)
+    labelField: Name            # campo String do módulo referenciado exibido no dropdown
+    selectType: default
+    queryFields:                # campos usados na busca do dropdown
+      - Name
+      - SerialNo
+
+# Variante B: Seleção múltipla (muitos registros)
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: Record
+  label: Técnicos
+  name: TecnicosIds
+  multi: true                   # AQUI, não dentro de options
+  place: 0
+  options:
+    module: Tecnico
+    labelField: Name
+    selectType: default         # mesmo com multi: true, manter "default" aqui
+    queryFields:
+      - Name
+      - Email
+
+# ── 6. FILE — Arquivo/Anexo ───────────────────────────────────────────────────
+# Uso: fotos, PDFs, documentos, manuais
+
+# Variante A: Um único arquivo
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: File
+  label: Foto do Equipamento
+  name: Photo
+  place: 0
+  options:
+    mode: single
+
+# Variante B: Múltiplos arquivos
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: File
+  label: Anexos
+  name: Attachments
+  place: 0
+  options:
+    mode: list
+
+# ── 7. EMAIL — Endereço de E-mail ─────────────────────────────────────────────
+# Uso: e-mail de contato, e-mail de técnico, e-mail de cliente
+# Valida automaticamente o formato de e-mail
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: Email
+  label: E-mail
+  name: Email
+  place: 0
+  # sem options necessárias
+
+# ── 8. URL — Endereço Web ─────────────────────────────────────────────────────
+# Uso: links externos, LinkedIn, documentação, sistemas terceiros
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: Url
+  label: Site
+  name: Website
+  place: 0
+  # sem options necessárias
+
+# ── 9. DATETIME — Data e/ou Hora ──────────────────────────────────────────────
+# Uso: datas de eventos, prazos, registros temporais
+
+# Variante A: Apenas data (sem horário)
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: DateTime
+  label: Data de Vencimento
+  name: DueDate
+  place: 0
+  options:
+    onlyDate: true              # exibe apenas seletor de data, sem horário
+
+# Variante B: Data + Hora completa
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: DateTime
+  label: Início do Evento
+  name: StartDateTime
+  place: 0
+  # sem options = data + hora
+
+# ── 10. USER — Usuário do Sistema ─────────────────────────────────────────────
+# Uso: responsável, aprovador, atribuído — qualquer campo que referencia uma
+# conta de usuário cadastrada no Corteza
+
+# Variante A: Usuário único
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: User
+  label: Responsável
+  name: OwnerId
+  place: 0
+  options:
+    presetWithAuthenticated: false  # true = pré-preenche com o usuário logado
+    selectType: default
+
+# Variante B: Múltiplos usuários
+- config:
+    dal: {encodingstrategy: null}
+    privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+    recordrevisions: {skip: false}
+  expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+  kind: User
+  label: Aprovadores
+  name: Approvers
+  multi: true
+  place: 0
+  options:
+    presetWithAuthenticated: false
+    selectType: multiple           # "multiple" (não "default") quando multi: true em User

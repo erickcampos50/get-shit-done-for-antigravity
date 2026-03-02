@@ -1,0 +1,254 @@
+# Template: Esqueleto Completo de Namespace
+# Este é o artefato principal que você importa no Corteza.
+# Copie, substitua todos os [PLACEHOLDERS] e expanda os blocos conforme necessário.
+#
+# ORDEM OBRIGATÓRIA DE DEPENDÊNCIAS:
+# 1. chart:   → antes dos módulos (podem referenciar qualquer módulo)
+# 2. module:  → módulos referenciados por outros ANTES de quem os referencia
+# 3. page:    → páginas de lista ANTES das páginas de detalhe
+#
+# REGRA DE OURO: nunca use UUIDs numéricos. O Corteza atribui IDs na importação.
+# Use sempre handles como string onde necessário.
+
+namespace:
+  - name: "[NOME DO APP]"
+    slug: [namespace-slug]             # kebab-case, único na instância Corteza
+    enabled: true
+    meta:
+      iconid: 0
+      logoid: 0
+      logoenabled: false
+      hidesidebar: false
+
+    # ── SEÇÃO 1: Charts ──────────────────────────────────────────────────────
+    # Defina ANTES dos módulos (embora referenciem módulos, o Corteza resolve na importação).
+    # Referencie cada chart nas páginas pelo seu `handle`.
+    chart:
+      - config:
+          reports:
+            - module: [MODULO]
+              metrics:
+                - field: count
+                  relativeValue: true
+                  type: doughnut
+                  label: "[LABEL]"
+                  fixTooltips: true
+              dimensions:
+                - field: [CAMPO]
+                  modifier: (no grouping / buckets)
+                  conditions: {}
+                  meta: {}
+                  skipMissing: true
+        handle: [Handle]Chart
+        name: "[Nome do Chart]"
+        namespaceID: [namespace-slug]
+      # Adicione mais charts aqui...
+
+    # ── SEÇÃO 2: Módulos ──────────────────────────────────────────────────────
+    # Ordem: módulos sem dependências PRIMEIRO, depois os que referenciam outros.
+    # Ex: se Manutencao referencia Equipamento → Equipamento vem antes.
+    module:
+      # Módulo 1: Sem dependências (é referenciado por outros)
+      - config:
+          dal:
+            connectionid: 0
+            constraints: {}
+            ident: ""
+            systemfieldencoding:
+              id: null
+              moduleid: null
+              namespaceid: null
+              revision: null
+              meta: null
+              ownedby: null
+              createdat: null
+              createdby: null
+              updatedat: null
+              updatedby: null
+              deletedat: null
+              deletedby: null
+          privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+          discovery:
+            public: {result: []}
+            private: {result: []}
+            protected: {result: []}
+          recordrevisions: {enabled: false, ident: ""}
+          recorddedup: {strict: false, rules: []}
+        handle: [MODULO-BASE]
+        name: "[Nome Base]"
+        namespaceID: [namespace-slug]
+        meta: [123, 125]
+        moduleField:
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Nome
+            name: Name
+            place: 0
+          # Adicione mais campos — ver field-types.yaml
+
+      # Módulo 2: Referencia Módulo 1 (vem depois)
+      - config:
+          dal:
+            connectionid: 0
+            constraints: {}
+            ident: ""
+            systemfieldencoding:
+              id: null
+              moduleid: null
+              namespaceid: null
+              revision: null
+              meta: null
+              ownedby: null
+              createdat: null
+              createdby: null
+              updatedat: null
+              updatedby: null
+              deletedat: null
+              deletedby: null
+          privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+          discovery:
+            public: {result: []}
+            private: {result: []}
+            protected: {result: []}
+          recordrevisions: {enabled: false, ident: ""}
+          recorddedup: {strict: false, rules: []}
+        handle: [MODULO-DEPENDENTE]
+        name: "[Nome Dependente]"
+        namespaceID: [namespace-slug]
+        meta: [123, 125]
+        moduleField:
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Título
+            name: Title
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Record
+            label: "[Rótulo do Relacionamento]"
+            name: [MODULO-BASE]Id
+            place: 0
+            options:
+              module: [MODULO-BASE]
+              labelField: Name
+              selectType: default
+              queryFields:
+                - Name
+          # Adicione mais campos...
+
+    # ── SEÇÃO 3: Páginas ──────────────────────────────────────────────────────
+    # Ordem: páginas de lista (moduleID: 0) ANTES das páginas de detalhe (moduleID: Handle).
+    page:
+      # ── PÁGINA DE LISTA (visible: true, moduleID: 0) ──────────────────────
+      - blocks:
+          - blockid: 1
+            kind: RecordList
+            title: "[MODULO] List"
+            options:
+              module: [MODULO-BASE]
+              page: RecordPageForModule[MODULO-BASE]
+              fields:
+                - {name: Name}
+              perPage: 20
+              prefilter: ""
+              presort: createdAt DESC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: [MODULO-BASE]s       # plural do handle do módulo — ex: Equipamentos
+        moduleID: 0
+        namespaceID: [namespace-slug]
+        selfID: 0
+        title: "[MODULO-BASE]s"
+        visible: true
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 80], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── PÁGINA DE DETALHE (visible: false, moduleID: handle) ──────────────
+      - blocks:
+          - blockid: 1
+            kind: Record
+            title: "Dados"
+            options:
+              fields:
+                - {name: Name}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: RecordList
+            title: "[MODULO-DEPENDENTE]s relacionados"
+            options:
+              module: [MODULO-DEPENDENTE]
+              page: RecordPageForModule[MODULO-DEPENDENTE]
+              fields:
+                - {name: Title}
+              perPage: 20
+              prefilter: [MODULO-BASE]Id = ${recordID}   # campo FK no filho = ID do registro atual
+              presort: createdAt DESC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: RecordPageForModule[MODULO-BASE]   # PADRÃO OBRIGATÓRIO
+        moduleID: [MODULO-BASE]
+        namespaceID: [namespace-slug]
+        selfID: [MODULO-BASE]s       # handle da página de lista correspondente
+        title: 'Record page for module "[MODULO-BASE]"'
+        visible: false
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 50], meta: {}}
+              - {blockID: 2, xywh: [0, 50, 48, 70], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+      # Repita o padrão de lista + detalhe para cada módulo adicional...

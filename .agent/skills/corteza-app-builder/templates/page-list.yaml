@@ -1,0 +1,94 @@
+# Template: Página de Lista
+# Aparece no menu lateral (visible: true). Exibe uma lista de registros de um módulo.
+# Copie para a seção `page:` do namespace, ANTES das páginas de detalhe.
+
+- blocks:
+    # ── Bloco 1: Lista de Registros ──────────────────────────────────────────
+    - blockid: 1              # minúsculo — referenciado no pageLayout como blockID (maiúsculo)
+      kind: RecordList
+      title: "[TITULO DA LISTA]"
+      options:
+        module: [MODULO]                          # handle do módulo a listar
+        page: RecordPageForModule[MODULO]         # handle da página de detalhe deste módulo
+        fields:
+          - name: [Campo1]                        # campos exibidos nas colunas da lista
+          - name: [Campo2]
+          - name: [Campo3]
+        perPage: 20                               # registros por página
+        prefilter: ""                             # vazio em páginas de lista (filtro dinâmico)
+        # Prefilters avançados (descomente o desejado):
+        # prefilter: ${userID} = CampoUser          # "Meus registros" — filtra pelo usuário logado
+        # prefilter: ${userID} = CampoUser AND Status = 'Aberto'  # "Meus registros abertos"
+        # prefilter: Status != 'Fechado'            # excluir registros com status específico
+        presort: createdAt DESC                  # ordenação padrão
+        allowExport: true                         # habilita botão de exportar CSV
+        draggable: false
+        editable: false
+        selectable: true
+        selectMode: multi
+        hideRecordCloneButton: true
+        hideRecordEditButton: false
+        hideRecordReminderButton: true
+        hideRecordViewButton: true
+      style:
+        variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+        wrap: {}
+        border: {}
+      xywh: [0, 0, 0, 0]     # SEMPRE [0,0,0,0] nos blocos — posição real fica no pageLayout abaixo
+      meta: {}
+      description: ""
+
+    # ── Bloco 2: Chart (opcional — remova se não precisar de gráfico na lista) ─
+    - blockid: 2
+      kind: Chart
+      title: "[TITULO DO GRAFICO]"
+      options:
+        chart: [HANDLE-DO-CHART]    # handle do chart (não o name)
+      style:
+        variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+        wrap: {}
+        border: {}
+      xywh: [0, 0, 0, 0]
+      meta: {}
+      description: ""
+
+  config:
+    navitem:
+      expanded: false
+      icon: null
+
+  handle: [HANDLE-LISTA]         # ex: Equipamentos, OrdensDeServico
+  moduleID: 0                    # OBRIGATÓRIO: 0 para páginas de lista
+  namespaceID: [NAMESPACE-SLUG]
+  selfID: 0                      # 0 para páginas de primeiro nível (sem pai)
+  title: "[TITULO DA PÁGINA]"    # exibido no menu lateral
+  visible: true                  # OBRIGATÓRIO: true para aparecer no menu
+  weight: 0                      # controla a ordem no menu (menor = primeiro)
+
+  pageLayout:
+    - blocks:
+        # Layout A: RecordList + Chart (75% lista, 25% chart)
+        - blockID: 1             # maiúsculo aqui — referencia o blockid acima
+          xywh: [0, 0, 36, 80]  # coluna 0, linha 0, largura 36, altura 80
+          meta: {}
+        - blockID: 2
+          xywh: [36, 0, 12, 80] # coluna 36, linha 0, largura 12 (36+12=48 colunas total)
+          meta: {}
+
+        # Layout B: RecordList sem chart (tela toda)
+        # - blockID: 1
+        #   xywh: [0, 0, 48, 80]
+        #   meta: {}
+      config:
+        visibility:
+          expression: ""
+          roles: []
+        buttons:
+          new: {enabled: true, label: ""}
+          edit: {enabled: true, label: ""}
+          submit: {enabled: true, label: ""}
+          delete: {enabled: true, label: ""}
+          clone: {enabled: true, label: ""}
+          back: {enabled: true, label: ""}
+        usetitle: false
+      handle: primary

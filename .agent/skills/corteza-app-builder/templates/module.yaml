@@ -1,0 +1,59 @@
+# Template: Módulo Completo
+# Substitua todos os [PLACEHOLDERS] antes de usar.
+# Copie este bloco para a seção `module:` do seu namespace YAML.
+
+- config:
+    dal:
+      connectionid: 0
+      constraints: {}
+      ident: ""
+      systemfieldencoding:
+        # Deixe todos como null — o Corteza gerencia esses campos internamente
+        id: null
+        moduleid: null
+        namespaceid: null
+        revision: null
+        meta: null
+        ownedby: null
+        createdat: null
+        createdby: null
+        updatedat: null
+        updatedby: null
+        deletedat: null
+        deletedby: null
+    privacy:
+      sensitivitylevelid: 0
+      usagedisclosure: ""
+    discovery:
+      # Controla quais campos aparecem nas buscas — deixe vazio para padrão
+      public: {result: []}
+      private: {result: []}
+      protected: {result: []}
+    recordrevisions:
+      enabled: false   # true = guarda histórico de versões do registro
+      ident: ""
+    recorddedup:
+      strict: false    # true = impede duplicatas baseado em regras
+      rules: []
+  handle: [HANDLE]             # PascalCase, único no namespace — ex: Cliente, OrdemDeServico
+  name: [NOME LEGÍVEL]         # Exibido na UI — ex: "Cliente", "Ordem de Serviço"
+  namespaceID: [NAMESPACE-SLUG] # Deve bater com o slug do namespace pai
+  meta: [123, 125]             # Valores fixos — manter assim
+  moduleField:
+    # ── Campo de exemplo: String simples ──────────────────────────────────────
+    - config:
+        dal:
+          encodingstrategy: null   # OBRIGATÓRIO — nunca omita este bloco
+        privacy:
+          sensitivitylevelid: 0
+          usagedisclosure: ""
+        recordrevisions:
+          skip: false
+      expressions:
+        disabledefaultvalidators: false
+        disabledefaultformatters: false
+      kind: String
+      label: [RÓTULO PT-BR]        # Exibido no formulário — ex: "Nome do Cliente"
+      name: [NomeCampo]            # CamelCase, sem espaços — ex: Name, SerialNumber
+      place: 0                     # Ordem de exibição (0 = usa ordem do arquivo)
+    # ── Adicione mais campos abaixo — ver field-types.yaml para exemplos ──────

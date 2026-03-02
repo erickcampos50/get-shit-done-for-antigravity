@@ -1,0 +1,1183 @@
+{
+  "workflows": [
+    {
+      "handle": "CRM-Opportunity-UpdateCampaigns",
+      "enabled": true,
+      "meta": {
+        "name": "CRM - Opportunity - Update Campaigns",
+        "description": "Update related Campaigns after an Opportunity is created, updated or deleted",
+        "visual": null
+      },
+      "keepSessions": 0,
+      "steps": [
+        {
+          "stepID": "5",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "campaignIDs",
+              "expr": "[]",
+              "type": "Array"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "5",
+              "parent": "1",
+              "value": "Set CampaignIds",
+              "xywh": [
+                2440,
+                2120,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "14",
+          "kind": "iterator",
+          "ref": "loopEach",
+          "arguments": [
+            {
+              "target": "items",
+              "expr": "record.recordID != \"0\" ? record.values.CampaignId : []",
+              "type": "Array"
+            }
+          ],
+          "results": [
+            {
+              "target": "campaignID",
+              "expr": "item"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "14",
+              "parent": "1",
+              "value": "Iterate record CampaignIDs",
+              "xywh": [
+                2680,
+                2120,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "16",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "campaignIDs",
+              "expr": "push(campaignIDs, \"recordID = \" + campaignID)",
+              "type": "Array"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "16",
+              "parent": "1",
+              "value": "Push campaignID",
+              "xywh": [
+                2680,
+                2440,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "21",
+          "kind": "continue",
+          "ref": "",
+          "arguments": [],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "21",
+              "parent": "1",
+              "value": "Check next ID",
+              "xywh": [
+                2440,
+                2440,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "26",
+          "kind": "gateway",
+          "ref": "excl",
+          "arguments": [],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "26",
+              "parent": "1",
+              "value": "If already pushed",
+              "xywh": [
+                2680,
+                2280,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "49",
+          "kind": "iterator",
+          "ref": "loopEach",
+          "arguments": [
+            {
+              "target": "items",
+              "expr": "oldRecord.recordID != \"0\" ? oldRecord.values.CampaignId : []",
+              "type": "Array"
+            }
+          ],
+          "results": [
+            {
+              "target": "campaignID",
+              "expr": "item"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "49",
+              "parent": "1",
+              "value": "Iterate oldRecord CampaignIDs",
+              "xywh": [
+                3040,
+                2120,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "58",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "campaignFilter",
+              "expr": "join(campaignIDs, \" OR \")",
+              "type": "String"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "58",
+              "parent": "1",
+              "value": "Set campaign filter",
+              "xywh": [
+                3400,
+                2120,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "61",
+          "kind": "function",
+          "ref": "composeRecordsSearch",
+          "arguments": [
+            {
+              "target": "module",
+              "value": "Campaigns",
+              "type": "Handle"
+            },
+            {
+              "target": "namespace",
+              "expr": "namespace",
+              "type": "ComposeNamespace"
+            },
+            {
+              "target": "query",
+              "expr": "campaignFilter",
+              "type": "String"
+            },
+            {
+              "target": "incTotal",
+              "expr": "true",
+              "type": "Boolean"
+            }
+          ],
+          "results": [
+            {
+              "target": "campaigns",
+              "expr": "records"
+            },
+            {
+              "target": "numOfCampaigns",
+              "expr": "total"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "61",
+              "parent": "1",
+              "value": "Get Campaigns",
+              "xywh": [
+                3400,
+                2280,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "63",
+          "kind": "iterator",
+          "ref": "loopEach",
+          "arguments": [
+            {
+              "target": "items",
+              "expr": "campaigns",
+              "type": "Array"
+            }
+          ],
+          "results": [
+            {
+              "target": "campaign",
+              "expr": "item"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "63",
+              "parent": "1",
+              "value": "Iterate over Campaigns",
+              "xywh": [
+                3400,
+                2440,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "65",
+          "kind": "termination",
+          "ref": "",
+          "arguments": [],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "65",
+              "parent": "1",
+              "value": "End",
+              "xywh": [
+                3040,
+                2440,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "73",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "campaign.values.NumberOfOpportunities",
+              "expr": "NumberOfOpportunities",
+              "type": "Integer"
+            },
+            {
+              "target": "campaign.values.AmountAllOpportunities",
+              "expr": "AmountAllOpportunities",
+              "type": "Float"
+            },
+            {
+              "target": "campaign.values.NumberOfWonOpportunities",
+              "expr": "NumberOfWonOpportunities",
+              "type": "Integer"
+            },
+            {
+              "target": "campaign.values.AmountWonOpportunities",
+              "expr": "AmountWonOpportunities",
+              "type": "Float"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "73",
+              "parent": "1",
+              "value": "Set Campaign Values",
+              "xywh": [
+                4240,
+                2120,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "75",
+          "kind": "function",
+          "ref": "composeRecordsUpdate",
+          "arguments": [
+            {
+              "target": "record",
+              "expr": "campaign",
+              "type": "ComposeRecord"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "75",
+              "parent": "1",
+              "value": "Save Campaign",
+              "xywh": [
+                4240,
+                2280,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "104",
+          "kind": "function",
+          "ref": "composeRecordsReport",
+          "arguments": [
+            {
+              "target": "module",
+              "expr": "module",
+              "type": "ComposeModule"
+            },
+            {
+              "target": "namespace",
+              "expr": "namespace",
+              "type": "ComposeNamespace"
+            },
+            {
+              "target": "metrics",
+              "value": "sum(Amount) AS amount",
+              "type": "String"
+            },
+            {
+              "target": "dimensons",
+              "expr": "\"DATE_FORMAT(created_at, '%Y-01-01')\"",
+              "type": "String"
+            },
+            {
+              "target": "filter",
+              "expr": "\"CampaignId = \" + campaign.recordID",
+              "type": "String"
+            }
+          ],
+          "results": [
+            {
+              "target": "report",
+              "expr": "report"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "104",
+              "parent": "1",
+              "value": "Generate Report All",
+              "xywh": [
+                3680,
+                2280,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "110",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "NumberOfOpportunities",
+              "expr": "0",
+              "type": "Integer"
+            },
+            {
+              "target": "AmountAllOpportunities",
+              "expr": "0",
+              "type": "Float"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "110",
+              "parent": "1",
+              "value": "Set Number and Amount",
+              "xywh": [
+                3680,
+                2120,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "112",
+          "kind": "iterator",
+          "ref": "loopEach",
+          "arguments": [
+            {
+              "target": "items",
+              "expr": "report ? report : []",
+              "type": "Array"
+            }
+          ],
+          "results": [
+            {
+              "target": "dimension",
+              "expr": "item"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "112",
+              "parent": "1",
+              "value": "Iterate report items",
+              "xywh": [
+                3680,
+                2440,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "123",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "NumberOfOpportunities",
+              "expr": "NumberOfOpportunities + dimension.count",
+              "type": "Integer"
+            },
+            {
+              "target": "AmountAllOpportunities",
+              "expr": "AmountAllOpportunities + (dimension.amount ? dimension.amount : 0)",
+              "type": "Float"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "123",
+              "parent": "1",
+              "value": "Update Number and Amount",
+              "xywh": [
+                3680,
+                2600,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "126",
+          "kind": "function",
+          "ref": "composeRecordsReport",
+          "arguments": [
+            {
+              "target": "module",
+              "expr": "module",
+              "type": "ComposeModule"
+            },
+            {
+              "target": "namespace",
+              "expr": "namespace",
+              "type": "ComposeNamespace"
+            },
+            {
+              "target": "metrics",
+              "value": "sum(Amount) AS amount",
+              "type": "String"
+            },
+            {
+              "target": "dimensons",
+              "expr": "\"DATE_FORMAT(created_at, '%Y-01-01')\"",
+              "type": "String"
+            },
+            {
+              "target": "filter",
+              "expr": "\"(CampaignId = \" + campaign.recordID + \") AND (StageName = 'Closed Won')\"",
+              "type": "String"
+            }
+          ],
+          "results": [
+            {
+              "target": "report",
+              "expr": "report"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "126",
+              "parent": "1",
+              "value": "Generate Report Won",
+              "xywh": [
+                3960,
+                2280,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "127",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "NumberOfWonOpportunities",
+              "expr": "0",
+              "type": "Integer"
+            },
+            {
+              "target": "AmountWonOpportunities",
+              "expr": "0",
+              "type": "Float"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "127",
+              "parent": "1",
+              "value": "Set Number and Amount",
+              "xywh": [
+                3960,
+                2120,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "128",
+          "kind": "iterator",
+          "ref": "loopEach",
+          "arguments": [
+            {
+              "target": "items",
+              "expr": "report ? report : []",
+              "type": "Array"
+            }
+          ],
+          "results": [
+            {
+              "target": "dimension",
+              "expr": "item"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "128",
+              "parent": "1",
+              "value": "Iterate report items",
+              "xywh": [
+                3960,
+                2440,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "131",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "NumberOfWonOpportunities",
+              "expr": "NumberOfWonOpportunities + dimension.count",
+              "type": "Integer"
+            },
+            {
+              "target": "AmountWonOpportunities",
+              "expr": "AmountWonOpportunities + (dimension.amount ? dimension.amount : 0)",
+              "type": "Float"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "131",
+              "parent": "1",
+              "value": "Update Number and Amount",
+              "xywh": [
+                3960,
+                2600,
+                200,
+                80
+              ]
+            }
+          }
+        }
+      ],
+      "paths": [
+        {
+          "expr": "has(campaignIDs, campaignID)",
+          "parentID": "26",
+          "childID": "21",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "28",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": "#1 - If"
+            }
+          }
+        },
+        {
+          "parentID": "26",
+          "childID": "16",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "29",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": "#2 - Else (if)"
+            }
+          }
+        },
+        {
+          "parentID": "49",
+          "childID": "26",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "59",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": "Body"
+            }
+          }
+        },
+        {
+          "parentID": "49",
+          "childID": "58",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "60",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": "End"
+            }
+          }
+        },
+        {
+          "parentID": "58",
+          "childID": "61",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "62",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "61",
+          "childID": "63",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "64",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "73",
+          "childID": "75",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "76",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "5",
+          "childID": "14",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "91",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "63",
+          "childID": "110",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "105",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": "Body"
+            }
+          }
+        },
+        {
+          "parentID": "63",
+          "childID": "65",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "106",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": "End"
+            }
+          }
+        },
+        {
+          "parentID": "110",
+          "childID": "104",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "111",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "104",
+          "childID": "112",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "113",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "112",
+          "childID": "123",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "124",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": "Body"
+            }
+          }
+        },
+        {
+          "parentID": "112",
+          "childID": "127",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "125",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": "End"
+            }
+          }
+        },
+        {
+          "parentID": "127",
+          "childID": "126",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "129",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "126",
+          "childID": "128",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "130",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "128",
+          "childID": "131",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "132",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": "Body"
+            }
+          }
+        },
+        {
+          "parentID": "128",
+          "childID": "73",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "133",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": "End"
+            }
+          }
+        },
+        {
+          "parentID": "14",
+          "childID": "26",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "134",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;",
+              "value": "Body"
+            }
+          }
+        },
+        {
+          "parentID": "14",
+          "childID": "49",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "135",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": "End"
+            }
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "resourceType": "compose:record",
+          "eventType": "afterDelete",
+          "constraints": [
+            {
+              "name": "module.handle",
+              "op": "=",
+              "values": [
+                "Opportunity"
+              ]
+            },
+            {
+              "name": "namespace.handle",
+              "op": "=",
+              "values": [
+                "crm"
+              ]
+            }
+          ],
+          "enabled": true,
+          "stepID": "5",
+          "meta": {
+            "description": "",
+            "visual": {
+              "edges": [
+                {
+                  "childID": "5",
+                  "meta": {
+                    "description": "",
+                    "label": "",
+                    "visual": {
+                      "id": "10",
+                      "parent": "1",
+                      "points": [
+                        {
+                          "x": 2400,
+                          "y": 2280
+                        },
+                        {
+                          "x": 2400,
+                          "y": 2200
+                        }
+                      ],
+                      "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;",
+                      "value": null
+                    }
+                  },
+                  "parentID": "4"
+                }
+              ],
+              "id": "4",
+              "parent": "1",
+              "value": "After Delete Opportunity",
+              "xywh": [
+                2160,
+                2240,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "resourceType": "compose:record",
+          "eventType": "afterCreate",
+          "constraints": [
+            {
+              "name": "module.handle",
+              "op": "=",
+              "values": [
+                "Opportunity"
+              ]
+            },
+            {
+              "name": "namespace.handle",
+              "op": "=",
+              "values": [
+                "crm"
+              ]
+            }
+          ],
+          "enabled": true,
+          "stepID": "5",
+          "meta": {
+            "description": "",
+            "visual": {
+              "edges": [
+                {
+                  "childID": "5",
+                  "meta": {
+                    "description": "",
+                    "label": "",
+                    "visual": {
+                      "id": "12",
+                      "parent": "1",
+                      "points": [
+                        {
+                          "x": 2400,
+                          "y": 2040
+                        },
+                        {
+                          "x": 2400,
+                          "y": 2120
+                        }
+                      ],
+                      "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;",
+                      "value": null
+                    }
+                  },
+                  "parentID": "2"
+                }
+              ],
+              "id": "2",
+              "parent": "1",
+              "value": "After Create Opportunity",
+              "xywh": [
+                2160,
+                2000,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "resourceType": "compose:record",
+          "eventType": "afterUpdate",
+          "constraints": [
+            {
+              "name": "module.handle",
+              "op": "=",
+              "values": [
+                "Opportunity"
+              ]
+            },
+            {
+              "name": "namespace.handle",
+              "op": "=",
+              "values": [
+                "crm"
+              ]
+            }
+          ],
+          "enabled": true,
+          "stepID": "5",
+          "meta": {
+            "description": "",
+            "visual": {
+              "edges": [
+                {
+                  "childID": "5",
+                  "meta": {
+                    "description": "",
+                    "label": "",
+                    "visual": {
+                      "id": "11",
+                      "parent": "1",
+                      "points": [
+                        {
+                          "x": 2400,
+                          "y": 2160
+                        },
+                        {
+                          "x": 2400,
+                          "y": 2160
+                        }
+                      ],
+                      "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+                      "value": null
+                    }
+                  },
+                  "parentID": "3"
+                }
+              ],
+              "id": "3",
+              "parent": "1",
+              "value": "After Update Opportunity",
+              "xywh": [
+                2160,
+                2120,
+                200,
+                80
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

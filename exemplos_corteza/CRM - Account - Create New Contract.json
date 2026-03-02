@@ -1,0 +1,537 @@
+{
+  "workflows": [
+    {
+      "handle": "CRM-Account-CreateNewContract",
+      "enabled": true,
+      "meta": {
+        "name": "CRM - Account - Create New Contract",
+        "description": "Creates new Contract record from an existing Account",
+        "visual": null
+      },
+      "keepSessions": 0,
+      "steps": [
+        {
+          "stepID": "3",
+          "kind": "function",
+          "ref": "composeRecordsLast",
+          "arguments": [
+            {
+              "target": "module",
+              "value": "Settings",
+              "type": "Handle"
+            },
+            {
+              "target": "namespace",
+              "expr": "namespace",
+              "type": "ComposeNamespace"
+            }
+          ],
+          "results": [
+            {
+              "target": "settings",
+              "expr": "record"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "3",
+              "parent": "1",
+              "value": "Fetch settings",
+              "xywh": [
+                2424,
+                2200,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "4",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "nextContractNumber",
+              "expr": "settings.values.ContractNextNumber ? settings.values.ContractNextNumber : 0",
+              "type": "Integer"
+            },
+            {
+              "target": "contractDefaultTime",
+              "expr": "settings.values.ContractDefaultTime ? settings.values.ContractDefaultTime : 0",
+              "type": "Integer"
+            },
+            {
+              "target": "settings.values.ContractNextNumber",
+              "expr": "settings.values.ContractNextNumber + 1",
+              "type": "Integer"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "4",
+              "parent": "1",
+              "value": "Prepare setting values",
+              "xywh": [
+                2680,
+                2200,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "5",
+          "kind": "function",
+          "ref": "composeRecordsNew",
+          "arguments": [
+            {
+              "target": "module",
+              "value": "Contract",
+              "type": "Handle"
+            },
+            {
+              "target": "namespace",
+              "expr": "namespace.namespaceID",
+              "type": "ID"
+            }
+          ],
+          "results": [
+            {
+              "target": "contract",
+              "expr": "record"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "5",
+              "parent": "1",
+              "value": "Prepare contract record",
+              "xywh": [
+                2392,
+                2360,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "6",
+          "kind": "expressions",
+          "ref": "",
+          "arguments": [
+            {
+              "target": "contract.values.AccountId",
+              "expr": "record.recordID",
+              "type": "ID"
+            },
+            {
+              "target": "contract.values.Status",
+              "expr": "\"Draft\"",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.BillingStreet",
+              "expr": "record.values.BillingStreet",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.BillingCity",
+              "expr": "record.values.BillingCity",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.BillingState",
+              "expr": "record.values.BillingState",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.BillingPostalCode",
+              "expr": "record.values.BillingPostalCode",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.BillingCountry",
+              "expr": "record.values.BillingCountry",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.ShippingStreet",
+              "expr": "record.values.BillingStreet",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.ShippingCity",
+              "expr": "record.values.BillingCity",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.ShippingState",
+              "expr": "record.values.BillingState",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.ShippingPostalCode",
+              "expr": "record.values.BillingPostalCode",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.ShippingCountry",
+              "expr": "record.values.BillingCountry",
+              "type": "String"
+            },
+            {
+              "target": "contract.values.ContractTerm",
+              "expr": "contractDefaultTime",
+              "type": "Integer"
+            },
+            {
+              "target": "contract.values.ContractNumber",
+              "expr": "nextContractNumber",
+              "type": "Integer"
+            },
+            {
+              "target": "contract.values.OwnerId",
+              "expr": "record.values.OwnerId",
+              "type": "ID"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "6",
+              "parent": "1",
+              "value": "Update contract data",
+              "xywh": [
+                2648,
+                2360,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "7",
+          "kind": "function",
+          "ref": "composeRecordsCreate",
+          "arguments": [
+            {
+              "target": "record",
+              "source": "contract",
+              "type": "ComposeRecord"
+            }
+          ],
+          "results": [
+            {
+              "target": "contract",
+              "expr": "record"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "7",
+              "parent": "1",
+              "value": "Save contract",
+              "xywh": [
+                2920,
+                2360,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "8",
+          "kind": "function",
+          "ref": "composeRecordsUpdate",
+          "arguments": [
+            {
+              "target": "record",
+              "source": "settings",
+              "type": "ComposeRecord"
+            }
+          ],
+          "results": [
+            {
+              "target": "settings",
+              "expr": "record"
+            }
+          ],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "8",
+              "parent": "1",
+              "value": "Update settings",
+              "xywh": [
+                2400,
+                2560,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "9",
+          "kind": "prompt",
+          "ref": "notification",
+          "arguments": [
+            {
+              "target": "title",
+              "value": "Success",
+              "type": "String"
+            },
+            {
+              "target": "message",
+              "value": "The new contract record has been created",
+              "type": "String"
+            },
+            {
+              "target": "variant",
+              "value": "success",
+              "type": "String"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "9",
+              "parent": "1",
+              "value": "Notify user",
+              "xywh": [
+                2400,
+                2720,
+                200,
+                80
+              ]
+            }
+          }
+        },
+        {
+          "stepID": "22",
+          "kind": "prompt",
+          "ref": "recordPage",
+          "arguments": [
+            {
+              "target": "module",
+              "value": "Contract",
+              "type": "Handle"
+            },
+            {
+              "target": "namespace",
+              "value": "crm",
+              "type": "Handle"
+            },
+            {
+              "target": "record",
+              "expr": "contract",
+              "type": "ComposeRecord"
+            },
+            {
+              "target": "edit",
+              "expr": "true",
+              "type": "Boolean"
+            }
+          ],
+          "results": [],
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "22",
+              "parent": "1",
+              "value": "Redirect user",
+              "xywh": [
+                2680,
+                2720,
+                200,
+                80
+              ]
+            }
+          }
+        }
+      ],
+      "paths": [
+        {
+          "parentID": "3",
+          "childID": "4",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "12",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "4",
+          "childID": "5",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "13",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "5",
+          "childID": "6",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "14",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "6",
+          "childID": "7",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "17",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "7",
+          "childID": "8",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "18",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "8",
+          "childID": "9",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "19",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        },
+        {
+          "parentID": "9",
+          "childID": "22",
+          "meta": {
+            "name": "",
+            "description": "",
+            "visual": {
+              "id": "23",
+              "parent": "1",
+              "points": [],
+              "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+              "value": null
+            }
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "resourceType": "compose:record",
+          "eventType": "onManual",
+          "constraints": [
+            {
+              "name": "module",
+              "op": "=",
+              "values": [
+                "Account"
+              ]
+            },
+            {
+              "name": "namespace.handle",
+              "op": "=",
+              "values": [
+                "crm"
+              ]
+            }
+          ],
+          "enabled": true,
+          "stepID": "3",
+          "meta": {
+            "description": "",
+            "visual": {
+              "edges": [
+                {
+                  "childID": "3",
+                  "meta": {
+                    "description": "",
+                    "label": "",
+                    "visual": {
+                      "id": "11",
+                      "parent": "1",
+                      "points": [],
+                      "style": "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;",
+                      "value": null
+                    }
+                  },
+                  "parentID": "2"
+                }
+              ],
+              "id": "2",
+              "parent": "1",
+              "value": "Create new Contract",
+              "xywh": [
+                2120,
+                2200,
+                200,
+                80
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

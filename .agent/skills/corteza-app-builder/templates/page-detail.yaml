@@ -1,0 +1,119 @@
+# Template: Página de Detalhe de Registro
+# NÃO aparece no menu lateral (visible: false).
+# Exibe os campos de UM registro específico + listas de registros filhos.
+# Copie para a seção `page:` do namespace, DEPOIS das páginas de lista.
+#
+# CONVENÇÃO OBRIGATÓRIA: handle deve ser RecordPageForModule{HandleDoModulo}
+
+- blocks:
+    # ── Bloco 1: Dados Principais do Registro ────────────────────────────────
+    - blockid: 1
+      kind: Record              # exibe/edita campos do registro atual
+      title: "Dados Principais"
+      options:
+        fields:
+          - name: [Campo1]      # campos exibidos nesta seção do formulário
+          - name: [Campo2]
+          - name: [Campo3]
+          - name: [Campo4]
+      style:
+        variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+        wrap: {}
+        border: {}
+      xywh: [0, 0, 0, 0]
+      meta: {}
+      description: ""
+
+    # ── Bloco 2: Segunda seção de campos (opcional — ex: "Informações de Contato")
+    - blockid: 2
+      kind: Record
+      title: "Detalhes Adicionais"
+      options:
+        fields:
+          - name: [CampoA]
+          - name: [CampoB]
+      style:
+        variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+        wrap: {}
+        border: {}
+      xywh: [0, 0, 0, 0]
+      meta: {}
+      description: ""
+
+    # ── Bloco 3: Lista de Registros Filhos ────────────────────────────────────
+    # Use quando este módulo é o "pai" e quer listar os filhos relacionados.
+    # ATENÇÃO: prefilter usa o name do campo FK no módulo filho (não o label)
+    - blockid: 3
+      kind: RecordList
+      title: "[NOME DO MÓDULO FILHO]s relacionados"
+      options:
+        module: [MODULO-FILHO]                          # handle do módulo filho
+        page: RecordPageForModule[MODULO-FILHO]         # página de detalhe do filho
+        fields:
+          - name: [CampoFilho1]
+          - name: [CampoFilho2]
+        perPage: 20
+        prefilter: [CAMPO-FK-NO-FILHO] = ${recordID}   # ← CRÍTICO: nome do campo Record no filho
+        # Exemplo: se OrdemDeServico tem campo name: EquipamentoId → prefilter: EquipamentoId = ${recordID}
+        # Prefilter invertido (registro atual é referenciado): ${recordID} = CampoFK
+        # Prefilter composto: CampoFK = ${recordID} AND Status = 'Ativo'
+        presort: createdAt DESC
+        allowExport: true
+      style:
+        variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+        wrap: {}
+        border: {}
+      xywh: [0, 0, 0, 0]
+      meta: {}
+      description: ""
+
+  config:
+    navitem:
+      expanded: false
+      icon: null
+
+  # PADRÃO OBRIGATÓRIO: RecordPageForModule + handle do módulo
+  handle: RecordPageForModule[MODULO]
+  moduleID: [MODULO]             # handle do módulo (não UUID) — ex: Equipamento, OrdemDeServico
+  namespaceID: [NAMESPACE-SLUG]
+  selfID: [HANDLE-LISTA-PAI]    # handle da página de lista correspondente (para breadcrumb)
+  title: 'Record page for module "[MODULO]"'
+  visible: false                 # OBRIGATÓRIO: false para não aparecer no menu
+  weight: 0
+
+  pageLayout:
+    - blocks:
+        # Layout A: Bloco Record topo + RecordList embaixo
+        - blockID: 1
+          xywh: [0, 0, 48, 50]   # largura total, altura 50 linhas
+          meta: {}
+        - blockID: 2
+          xywh: [0, 50, 48, 70]  # começa após o bloco 1 (y=50), altura 70
+          meta: {}
+        - blockID: 3
+          xywh: [0, 120, 48, 70]
+          meta: {}
+
+        # Layout B: Dois blocos Record lado a lado + RecordList embaixo
+        # - blockID: 1
+        #   xywh: [0, 0, 24, 60]    # metade esquerda
+        #   meta: {}
+        # - blockID: 2
+        #   xywh: [24, 0, 24, 60]   # metade direita
+        #   meta: {}
+        # - blockID: 3
+        #   xywh: [0, 60, 48, 70]   # largura total embaixo
+        #   meta: {}
+      config:
+        visibility:
+          expression: ""
+          roles: []
+        buttons:
+          new: {enabled: true, label: ""}
+          edit: {enabled: true, label: ""}
+          submit: {enabled: true, label: ""}
+          delete: {enabled: true, label: ""}
+          clone: {enabled: true, label: ""}
+          back: {enabled: true, label: ""}
+        usetitle: false
+      handle: primary

@@ -1,0 +1,763 @@
+# App: Helpdesk de TI
+# Namespace slug: helpdesk-ti
+# Módulos: Solicitante, Tecnico, Chamado (em ordem de dependência)
+# Charts: ChamadosPorStatus (doughnut), ChamadosPorCategoria (bar), ChamadosPorTecnico (bar)
+# Páginas: 6 (3 listas + 3 detalhes)
+
+namespace:
+  - name: "Helpdesk de TI"
+    slug: helpdesk-ti
+    enabled: true
+    meta:
+      iconid: 0
+      logoid: 0
+      logoenabled: false
+      hidesidebar: false
+
+    # ── CHARTS ───────────────────────────────────────────────────────────────
+    chart:
+      # Chart 1: Distribuição de chamados por status (rosca, em %)
+      - config:
+          reports:
+            - module: Chamado
+              metrics:
+                - field: count
+                  relativeValue: true
+                  type: doughnut
+                  label: Status
+                  fixTooltips: true
+              dimensions:
+                - field: Status
+                  modifier: (no grouping / buckets)
+                  conditions: {}
+                  meta: {}
+                  skipMissing: true
+        handle: ChamadosPorStatus
+        name: Chamados por Status
+        namespaceID: helpdesk-ti
+
+      # Chart 2: Quantidade de chamados por categoria (barras)
+      - config:
+          reports:
+            - module: Chamado
+              metrics:
+                - field: count
+                  type: bar
+                  label: Chamados
+              dimensions:
+                - field: Category
+                  modifier: (no grouping / buckets)
+                  conditions: {}
+                  meta: {}
+                  skipMissing: false
+        handle: ChamadosPorCategoria
+        name: Chamados por Categoria
+        namespaceID: helpdesk-ti
+
+      # Chart 3: Carga de trabalho por técnico (barras)
+      - config:
+          reports:
+            - module: Chamado
+              metrics:
+                - field: count
+                  type: bar
+                  label: Chamados
+              dimensions:
+                - field: TecnicoId    # campo Record → Corteza exibe o labelField (Name) no eixo X
+                  modifier: (no grouping / buckets)
+                  conditions: {}
+                  meta: {}
+                  skipMissing: true
+        handle: ChamadosPorTecnico
+        name: Chamados por Técnico
+        namespaceID: helpdesk-ti
+
+    # ── MÓDULOS ───────────────────────────────────────────────────────────────
+    # Ordem de dependência: Solicitante → Tecnico → Chamado
+    module:
+      # ── MÓDULO 1: Solicitante ─────────────────────────────────────────────
+      - config:
+          dal:
+            connectionid: 0
+            constraints: {}
+            ident: ""
+            systemfieldencoding:
+              id: null
+              moduleid: null
+              namespaceid: null
+              revision: null
+              meta: null
+              ownedby: null
+              createdat: null
+              createdby: null
+              updatedat: null
+              updatedby: null
+              deletedat: null
+              deletedby: null
+          privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+          discovery:
+            public: {result: []}
+            private: {result: []}
+            protected: {result: []}
+          recordrevisions: {enabled: false, ident: ""}
+          recorddedup: {strict: false, rules: []}
+        handle: Solicitante
+        name: Solicitante
+        namespaceID: helpdesk-ti
+        meta: [123, 125]
+        moduleField:
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Nome Completo
+            name: Name
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Email
+            label: E-mail Corporativo
+            name: Email
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Departamento
+            name: Department
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Ramal
+            name: Extension
+            place: 0
+
+      # ── MÓDULO 2: Tecnico ──────────────────────────────────────────────────
+      - config:
+          dal:
+            connectionid: 0
+            constraints: {}
+            ident: ""
+            systemfieldencoding:
+              id: null
+              moduleid: null
+              namespaceid: null
+              revision: null
+              meta: null
+              ownedby: null
+              createdat: null
+              createdby: null
+              updatedat: null
+              updatedby: null
+              deletedat: null
+              deletedby: null
+          privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+          discovery:
+            public: {result: []}
+            private: {result: []}
+            protected: {result: []}
+          recordrevisions: {enabled: false, ident: ""}
+          recorddedup: {strict: false, rules: []}
+        handle: Tecnico
+        name: Técnico
+        namespaceID: helpdesk-ti
+        meta: [123, 125]
+        moduleField:
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Nome do Técnico
+            name: Name
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Email
+            label: E-mail
+            name: Email
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Select
+            label: Especialidade
+            name: Specialty
+            place: 0
+            options:
+              selectType: default
+              options:
+                - {text: Hardware, value: hardware}
+                - {text: Software, value: software}
+                - {text: Redes, value: redes}
+                - {text: Geral, value: geral}
+
+      # ── MÓDULO 3: Chamado ─────────────────────────────────────────────────
+      # Referencia: Solicitante (SolicitanteId) e Tecnico (TecnicoId)
+      - config:
+          dal:
+            connectionid: 0
+            constraints: {}
+            ident: ""
+            systemfieldencoding:
+              id: null
+              moduleid: null
+              namespaceid: null
+              revision: null
+              meta: null
+              ownedby: null
+              createdat: null
+              createdby: null
+              updatedat: null
+              updatedby: null
+              deletedat: null
+              deletedby: null
+          privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+          discovery:
+            public: {result: []}
+            private: {result: []}
+            protected: {result: []}
+          recordrevisions: {enabled: false, ident: ""}
+          recorddedup: {strict: false, rules: []}
+        handle: Chamado
+        name: Chamado
+        namespaceID: helpdesk-ti
+        meta: [123, 125]
+        moduleField:
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Record
+            label: Solicitante
+            name: SolicitanteId     # prefilter nas páginas de detalhe: SolicitanteId = ${recordID}
+            place: 0
+            options:
+              module: Solicitante
+              labelField: Name
+              selectType: default
+              queryFields:
+                - Name
+                - Email
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Record
+            label: Técnico Responsável
+            name: TecnicoId         # prefilter nas páginas de detalhe: TecnicoId = ${recordID}
+            place: 0
+            options:
+              module: Tecnico
+              labelField: Name
+              selectType: default
+              queryFields:
+                - Name
+                - Specialty
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Título do Problema
+            name: Title
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Select
+            label: Categoria
+            name: Category
+            place: 0
+            options:
+              selectType: default
+              options:
+                - {text: Hardware, value: hardware}
+                - {text: Software, value: software}
+                - {text: Redes, value: redes}
+                - {text: Acesso, value: acesso}
+                - {text: Outro, value: outro}
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Select
+            label: Prioridade
+            name: Priority
+            place: 0
+            options:
+              selectType: default
+              options:
+                - {text: "Crítica", value: critica}
+                - {text: Alta, value: alta}
+                - {text: "Média", value: media}
+                - {text: Baixa, value: baixa}
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Select
+            label: Status
+            name: Status
+            place: 0
+            options:
+              selectType: default
+              options:
+                - {text: Aberto, value: aberto}
+                - {text: Em andamento, value: em_andamento}
+                - {text: Aguardando usuário, value: aguardando_usuario}
+                - {text: Resolvido, value: resolvido}
+                - {text: Fechado, value: fechado}
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: DateTime
+            label: Data de Abertura
+            name: OpenedDate
+            place: 0
+            options:
+              onlyDate: true
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: DateTime
+            label: Data de Resolução
+            name: ResolvedDate
+            place: 0
+            options:
+              onlyDate: true
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Descrição do Problema
+            name: Description
+            place: 0
+            options:
+              multiLine: true
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Solução Aplicada
+            name: Resolution
+            place: 0
+            options:
+              multiLine: true
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Select
+            label: Satisfação do Usuário
+            name: SatisfactionScore  # Select (não Number) — conjunto fixo de 5 opções
+            place: 0
+            options:
+              selectType: default
+              options:
+                - {text: "★★★★★ Excelente", value: "5"}
+                - {text: "★★★★  Bom", value: "4"}
+                - {text: "★★★   Regular", value: "3"}
+                - {text: "★★    Ruim", value: "2"}
+                - {text: "★     Péssimo", value: "1"}
+
+    # ── PÁGINAS ───────────────────────────────────────────────────────────────
+    page:
+      # ════════════════════════════════════════════════
+      # LISTAS (visible: true, moduleID: 0)
+      # ════════════════════════════════════════════════
+
+      # ── Lista: Solicitantes ───────────────────────
+      - blocks:
+          - blockid: 1
+            kind: RecordList
+            title: Solicitantes
+            options:
+              module: Solicitante
+              page: RecordPageForModuleSolicitante
+              fields:
+                - {name: Name}
+                - {name: Email}
+                - {name: Department}
+              perPage: 20
+              prefilter: ""
+              presort: Name ASC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: Solicitantes
+        moduleID: 0
+        namespaceID: helpdesk-ti
+        selfID: 0
+        title: Solicitantes
+        visible: true
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 80], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Lista: Técnicos ───────────────────────────
+      - blocks:
+          - blockid: 1
+            kind: RecordList
+            title: Técnicos
+            options:
+              module: Tecnico
+              page: RecordPageForModuleTecnico
+              fields:
+                - {name: Name}
+                - {name: Email}
+                - {name: Specialty}
+              perPage: 20
+              prefilter: ""
+              presort: Name ASC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: Tecnicos
+        moduleID: 0
+        namespaceID: helpdesk-ti
+        selfID: 0
+        title: Técnicos
+        visible: true
+        weight: 1
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 80], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Lista: Chamados (com 2 charts) ─────────────
+      - blocks:
+          - blockid: 1
+            kind: RecordList
+            title: Chamados
+            options:
+              module: Chamado
+              page: RecordPageForModuleChamado
+              fields:
+                - {name: Title}
+                - {name: SolicitanteId}
+                - {name: TecnicoId}
+                - {name: Category}
+                - {name: Priority}
+                - {name: Status}
+                - {name: OpenedDate}
+              perPage: 20
+              prefilter: ""
+              presort: OpenedDate DESC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: Chart
+            title: Por Status
+            options:
+              chart: ChamadosPorStatus
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 3
+            kind: Chart
+            title: Por Categoria
+            options:
+              chart: ChamadosPorCategoria
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: Chamados
+        moduleID: 0
+        namespaceID: helpdesk-ti
+        selfID: 0
+        title: Chamados
+        visible: true
+        weight: 2
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 36, 80], meta: {}}  # lista (75%)
+              - {blockID: 2, xywh: [36, 0, 12, 40], meta: {}} # chart status (25% topo)
+              - {blockID: 3, xywh: [36, 40, 12, 40], meta: {}} # chart categoria (25% baixo)
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ════════════════════════════════════════════════
+      # DETALHES (visible: false, moduleID: Handle)
+      # ════════════════════════════════════════════════
+
+      # ── Detalhe: Solicitante ──────────────────────
+      - blocks:
+          - blockid: 1
+            kind: Record
+            title: Dados do Solicitante
+            options:
+              fields:
+                - {name: Name}
+                - {name: Email}
+                - {name: Department}
+                - {name: Extension}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: RecordList
+            title: Chamados deste Solicitante
+            options:
+              module: Chamado
+              page: RecordPageForModuleChamado
+              fields:
+                - {name: Title}
+                - {name: Category}
+                - {name: Priority}
+                - {name: Status}
+                - {name: OpenedDate}
+              perPage: 20
+              prefilter: SolicitanteId = ${recordID}
+              presort: OpenedDate DESC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: RecordPageForModuleSolicitante
+        moduleID: Solicitante
+        namespaceID: helpdesk-ti
+        selfID: Solicitantes
+        title: 'Record page for module "Solicitante"'
+        visible: false
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 35], meta: {}}
+              - {blockID: 2, xywh: [0, 35, 48, 70], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Detalhe: Técnico ──────────────────────────
+      - blocks:
+          - blockid: 1
+            kind: Record
+            title: Dados do Técnico
+            options:
+              fields:
+                - {name: Name}
+                - {name: Email}
+                - {name: Specialty}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: RecordList
+            title: Chamados deste Técnico
+            options:
+              module: Chamado
+              page: RecordPageForModuleChamado
+              fields:
+                - {name: Title}
+                - {name: SolicitanteId}
+                - {name: Priority}
+                - {name: Status}
+                - {name: OpenedDate}
+              perPage: 20
+              prefilter: TecnicoId = ${recordID}
+              presort: OpenedDate DESC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: RecordPageForModuleTecnico
+        moduleID: Tecnico
+        namespaceID: helpdesk-ti
+        selfID: Tecnicos
+        title: 'Record page for module "Tecnico"'
+        visible: false
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 35], meta: {}}
+              - {blockID: 2, xywh: [0, 35, 48, 70], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Detalhe: Chamado ──────────────────────────
+      - blocks:
+          - blockid: 1
+            kind: Record
+            title: Informações do Chamado
+            options:
+              fields:
+                - {name: SolicitanteId}
+                - {name: TecnicoId}
+                - {name: Title}
+                - {name: Category}
+                - {name: Priority}
+                - {name: Status}
+                - {name: OpenedDate}
+                - {name: ResolvedDate}
+                - {name: SatisfactionScore}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: Record
+            title: Diagnóstico e Resolução
+            options:
+              fields:
+                - {name: Description}
+                - {name: Resolution}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: RecordPageForModuleChamado
+        moduleID: Chamado
+        namespaceID: helpdesk-ti
+        selfID: Chamados
+        title: 'Record page for module "Chamado"'
+        visible: false
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 24, 80], meta: {}}  # informações (50% esquerda)
+              - {blockID: 2, xywh: [24, 0, 24, 80], meta: {}} # diagnóstico (50% direita)
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary

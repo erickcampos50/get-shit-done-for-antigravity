@@ -1,0 +1,143 @@
+# Templates de Charts — 4 tipos disponíveis no Corteza
+# Copie o bloco do tipo desejado para a seção `chart:` do namespace.
+# Cada chart deve ser referenciado nas páginas pelo seu `handle`.
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TIPO 1: DOUGHNUT — Rosca
+# Melhor para: distribuição por categoria (ex: % por status, % por tipo)
+# ══════════════════════════════════════════════════════════════════════════════
+- config:
+    reports:
+      - module: [MODULO]              # handle do módulo fonte dos dados
+        metrics:
+          - field: count              # "count" = conta registros
+            type: doughnut
+            relativeValue: true       # true = mostra % em vez de valores absolutos
+            relativePrecision: "2"    # casas decimais do percentual
+            label: "[LABEL]"
+            fixTooltips: true
+        dimensions:
+          - field: [CAMPO-CATEGORIA]  # campo Select ou String de categorias
+            modifier: (no grouping / buckets)  # sem agrupamento temporal
+            conditions: {}
+            meta: {}
+            skipMissing: true         # ignora registros sem valor neste campo
+  handle: [Handle]DoughnutChart       # ex: OSPorStatus
+  name: "[Nome Legível]"              # ex: "OS por Status"
+  namespaceID: [NAMESPACE-SLUG]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TIPO 2: PIE — Pizza
+# Melhor para: distribuição por categoria quando quer valores absolutos
+# Diferença do doughnut: visual com fatias cheias, sem buraco central
+# ══════════════════════════════════════════════════════════════════════════════
+- config:
+    reports:
+      - module: [MODULO]
+        metrics:
+          - field: count
+            type: pie
+            relativeValue: false      # false = mostra valores absolutos
+            label: "[LABEL]"
+            fixTooltips: true
+        dimensions:
+          - field: [CAMPO-CATEGORIA]
+            modifier: (no grouping / buckets)
+            conditions: {}
+            meta: {}
+            skipMissing: true
+  handle: [Handle]PieChart
+  name: "[Nome Legível]"
+  namespaceID: [NAMESPACE-SLUG]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TIPO 3: BAR — Barras
+# Melhor para: comparar totais entre categorias, ranking, soma por grupo
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Variante A: Contagem por categoria
+- config:
+    reports:
+      - module: [MODULO]
+        metrics:
+          - field: count              # conta registros por categoria
+            type: bar
+            label: "Quantidade"
+        dimensions:
+          - field: [CAMPO-CATEGORIA]
+            modifier: (no grouping / buckets)
+            conditions: {}
+            meta: {}
+            skipMissing: false        # false = inclui categorias sem registros (mostra 0)
+  handle: [Handle]BarChart
+  name: "[Nome Legível]"
+  namespaceID: [NAMESPACE-SLUG]
+
+# Variante B: Soma de campo numérico por categoria (ex: custo total por técnico)
+- config:
+    reports:
+      - module: [MODULO]
+        metrics:
+          - field: [CAMPO-NUMERICO]   # nome de um campo Number a somar
+            aggregate: SUM            # SUM | AVG | MAX | MIN | COUNT
+            type: bar
+            label: "[LABEL]"
+        dimensions:
+          - field: [CAMPO-CATEGORIA]
+            modifier: (no grouping / buckets)
+            conditions: {}
+            meta: {}
+            skipMissing: true
+  handle: [Handle]SumBarChart
+  name: "[Nome Legível]"
+  namespaceID: [NAMESPACE-SLUG]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TIPO 4: LINE — Linhas
+# Melhor para: evolução temporal (quantidades por mês, custo por mês)
+# REQUER campo DateTime para a dimensão (modifier: MONTH/DATE/YEAR/WEEK)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Variante A: Contagem mensal
+- config:
+    reports:
+      - module: [MODULO]
+        metrics:
+          - field: count
+            type: line
+            label: "Registros por Mês"
+            fill: true                # preenche área abaixo da linha (área chart)
+            lineTension: 0.4          # suavização: 0=angular, 1=muito curvo
+            fixTooltips: null
+        dimensions:
+          - field: createdAt         # campo DateTime — pode ser qualquer campo DateTime
+            modifier: MONTH           # MONTH | DATE | YEAR | WEEK | QUARTER
+            conditions: {}
+            meta: {}
+            skipMissing: true
+            autoSkip: true            # pula rótulos para não sobrecarregar o eixo X
+  handle: [Handle]LineChart
+  name: "[Nome Legível]"
+  namespaceID: [NAMESPACE-SLUG]
+
+# Variante B: Soma temporal (ex: custo total por mês)
+- config:
+    reports:
+      - module: [MODULO]
+        metrics:
+          - field: [CAMPO-NUMERICO]
+            aggregate: SUM
+            type: line
+            label: "Total por Mês"
+            fill: true
+            lineTension: 0.2
+        dimensions:
+          - field: [CAMPO-DATETIME]
+            modifier: MONTH
+            conditions: {}
+            meta: {}
+            skipMissing: true
+            autoSkip: true
+  handle: [Handle]SumLineChart
+  name: "[Nome Legível]"
+  namespaceID: [NAMESPACE-SLUG]

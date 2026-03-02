@@ -1,0 +1,1049 @@
+# App: Gestão de Manutenções de Ar Condicionado (CMMS)
+# Namespace slug: manutencao-ac
+# Módulos: Local, Tecnico, Equipamento, Manutencao
+# Charts: ManutencoesPorStatus, CustoTotalPorMes, ManutencoesPorTipo
+# Páginas: 8 (4 listas + 4 detalhes)
+
+namespace:
+  - name: "Gestão de Manutenções de AC"
+    slug: manutencao-ac
+    enabled: true
+    meta:
+      iconid: 0
+      logoid: 0
+      logoenabled: false
+      hidesidebar: false
+
+    # ── CHARTS ───────────────────────────────────────────────────────────────
+    # Definidos antes dos modules para referência nas páginas.
+    # Todos referenciam o módulo Manutencao.
+    chart:
+      # Chart 1: Distribuição de manutenções por status (rosca, em %)
+      - config:
+          reports:
+            - module: Manutencao
+              metrics:
+                - field: count
+                  relativeValue: true       # mostra % por fatia
+                  type: doughnut
+                  label: Status
+                  fixTooltips: true
+              dimensions:
+                - field: Status             # campo Select do módulo Manutencao
+                  modifier: (no grouping / buckets)
+                  conditions: {}
+                  meta: {}
+                  skipMissing: true
+        handle: ManutencoesPorStatus
+        name: Manutenções por Status
+        namespaceID: manutencao-ac
+
+      # Chart 2: Custo total acumulado por mês (linha temporal)
+      - config:
+          reports:
+            - module: Manutencao
+              metrics:
+                - field: Cost              # campo Number do módulo Manutencao
+                  aggregate: SUM           # soma os valores de Cost agrupados por mês
+                  type: line
+                  label: Custo Total (R$)
+                  fill: true
+                  lineTension: 0.3
+              dimensions:
+                - field: createdAt        # campo de data de criação (campo do sistema)
+                  modifier: MONTH          # agrupa por mês
+                  conditions: {}
+                  meta: {}
+                  skipMissing: true
+                  autoSkip: true
+        handle: CustoTotalPorMes
+        name: Custo Total por Mês
+        namespaceID: manutencao-ac
+
+      # Chart 3: Quantidade de manutenções por tipo (barras)
+      - config:
+          reports:
+            - module: Manutencao
+              metrics:
+                - field: count
+                  type: bar
+                  label: Manutenções
+              dimensions:
+                - field: Type              # campo Select (Preventiva, Corretiva, Inspeção)
+                  modifier: (no grouping / buckets)
+                  conditions: {}
+                  meta: {}
+                  skipMissing: false       # false = mostra tipos sem registros (valor 0)
+        handle: ManutencoesPorTipo
+        name: Manutenções por Tipo
+        namespaceID: manutencao-ac
+
+    # ── MÓDULOS ───────────────────────────────────────────────────────────────
+    # Ordem de dependência:
+    # Local (sem deps) → Tecnico (sem deps) → Equipamento (ref. Local) → Manutencao (ref. Equipamento + Tecnico)
+    module:
+      # ── MÓDULO 1: Local ────────────────────────────────────────────────────
+      - config:
+          dal:
+            connectionid: 0
+            constraints: {}
+            ident: ""
+            systemfieldencoding:
+              id: null
+              moduleid: null
+              namespaceid: null
+              revision: null
+              meta: null
+              ownedby: null
+              createdat: null
+              createdby: null
+              updatedat: null
+              updatedby: null
+              deletedat: null
+              deletedby: null
+          privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+          discovery:
+            public: {result: []}
+            private: {result: []}
+            protected: {result: []}
+          recordrevisions: {enabled: false, ident: ""}
+          recorddedup: {strict: false, rules: []}
+        handle: Local
+        name: Local
+        namespaceID: manutencao-ac
+        meta: [123, 125]
+        moduleField:
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Nome do Local
+            name: Name
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Andar / Pavimento
+            name: Floor
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Setor / Departamento
+            name: Sector
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Endereço Completo
+            name: Address
+            place: 0
+            options:
+              multiLine: true
+
+      # ── MÓDULO 2: Tecnico ──────────────────────────────────────────────────
+      - config:
+          dal:
+            connectionid: 0
+            constraints: {}
+            ident: ""
+            systemfieldencoding:
+              id: null
+              moduleid: null
+              namespaceid: null
+              revision: null
+              meta: null
+              ownedby: null
+              createdat: null
+              createdby: null
+              updatedat: null
+              updatedby: null
+              deletedat: null
+              deletedby: null
+          privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+          discovery:
+            public: {result: []}
+            private: {result: []}
+            protected: {result: []}
+          recordrevisions: {enabled: false, ident: ""}
+          recorddedup: {strict: false, rules: []}
+        handle: Tecnico
+        name: Técnico
+        namespaceID: manutencao-ac
+        meta: [123, 125]
+        moduleField:
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Nome do Técnico
+            name: Name
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Email
+            label: E-mail
+            name: Email
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Telefone
+            name: Phone
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Select
+            label: Especialidade
+            name: Specialty
+            place: 0
+            options:
+              selectType: default
+              options:
+                - {text: Refrigeração, value: refrigeracao}
+                - {text: Elétrica, value: eletrica}
+                - {text: Geral, value: geral}
+
+      # ── MÓDULO 3: Equipamento ─────────────────────────────────────────────
+      # Referencia: Local (LocalId)
+      - config:
+          dal:
+            connectionid: 0
+            constraints: {}
+            ident: ""
+            systemfieldencoding:
+              id: null
+              moduleid: null
+              namespaceid: null
+              revision: null
+              meta: null
+              ownedby: null
+              createdat: null
+              createdby: null
+              updatedat: null
+              updatedby: null
+              deletedat: null
+              deletedby: null
+          privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+          discovery:
+            public: {result: []}
+            private: {result: []}
+            protected: {result: []}
+          recordrevisions: {enabled: false, ident: ""}
+          recorddedup: {strict: false, rules: []}
+        handle: Equipamento
+        name: Equipamento
+        namespaceID: manutencao-ac
+        meta: [123, 125]
+        moduleField:
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Nome / Identificação
+            name: Name
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Marca
+            name: Brand
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Modelo
+            name: Model
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Número de Série
+            name: SerialNo
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Capacidade (BTU)
+            name: Capacity
+            place: 0
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Select
+            label: Status
+            name: Status
+            place: 0
+            options:
+              selectType: default
+              options:
+                - {text: Ativo, value: ativo}
+                - {text: Inativo, value: inativo}
+                - {text: Em manutenção, value: em_manutencao}
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: DateTime
+            label: Data de Instalação
+            name: InstallDate
+            place: 0
+            options:
+              onlyDate: true
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Record
+            label: Localização
+            name: LocalId              # nome do campo FK — usado no prefilter: LocalId = ${recordID}
+            place: 0
+            options:
+              module: Local            # referencia o módulo Local (vem antes na lista)
+              labelField: Name         # campo exibido no dropdown
+              selectType: default
+              queryFields:
+                - Name
+                - Sector
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: File
+            label: Foto do Equipamento
+            name: Photo
+            place: 0
+            options:
+              mode: single
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Observações
+            name: Notes
+            place: 0
+            options:
+              multiLine: true
+
+      # ── MÓDULO 4: Manutencao ──────────────────────────────────────────────
+      # Referencia: Equipamento (EquipamentoId) e Tecnico (TecnicoId)
+      # Vem por último pois depende dos dois módulos anteriores
+      - config:
+          dal:
+            connectionid: 0
+            constraints: {}
+            ident: ""
+            systemfieldencoding:
+              id: null
+              moduleid: null
+              namespaceid: null
+              revision: null
+              meta: null
+              ownedby: null
+              createdat: null
+              createdby: null
+              updatedat: null
+              updatedby: null
+              deletedat: null
+              deletedby: null
+          privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+          discovery:
+            public: {result: []}
+            private: {result: []}
+            protected: {result: []}
+          recordrevisions: {enabled: false, ident: ""}
+          recorddedup: {strict: false, rules: []}
+        handle: Manutencao
+        name: Manutenção
+        namespaceID: manutencao-ac
+        meta: [123, 125]
+        moduleField:
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Record
+            label: Equipamento
+            name: EquipamentoId
+            place: 0
+            options:
+              module: Equipamento
+              labelField: Name
+              selectType: default
+              queryFields:
+                - Name
+                - Model
+                - SerialNo
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Record
+            label: Técnico Responsável
+            name: TecnicoId
+            place: 0
+            options:
+              module: Tecnico
+              labelField: Name
+              selectType: default
+              queryFields:
+                - Name
+                - Email
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Select
+            label: Tipo de Manutenção
+            name: Type
+            place: 0
+            options:
+              selectType: default
+              options:
+                - {text: Preventiva, value: preventiva}
+                - {text: Corretiva, value: corretiva}
+                - {text: Inspeção, value: inspecao}
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Select
+            label: Status
+            name: Status
+            place: 0
+            options:
+              selectType: default
+              options:
+                - {text: Agendada, value: agendada}
+                - {text: Em andamento, value: em_andamento}
+                - {text: Concluída, value: concluida}
+                - {text: Cancelada, value: cancelada}
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: DateTime
+            label: Data Agendada
+            name: ScheduledDate
+            place: 0
+            options:
+              onlyDate: true
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: DateTime
+            label: Data de Conclusão
+            name: CompletedDate
+            place: 0
+            options:
+              onlyDate: true
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Number
+            label: Custo (R$)
+            name: Cost
+            place: 0
+            options:
+              format: "0.00"
+              prefix: "R$ "
+              precision: 2
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: Number
+            label: Duração (horas)
+            name: Duration
+            place: 0
+            options:
+              format: "0.0"
+              suffix: " h"
+              precision: 1
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Descrição do Problema
+            name: Description
+            place: 0
+            options:
+              multiLine: true
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: String
+            label: Solução Aplicada
+            name: Solution
+            place: 0
+            options:
+              multiLine: true
+          - config:
+              dal: {encodingstrategy: null}
+              privacy: {sensitivitylevelid: 0, usagedisclosure: ""}
+              recordrevisions: {skip: false}
+            expressions: {disabledefaultvalidators: false, disabledefaultformatters: false}
+            kind: File
+            label: Fotos da Manutenção
+            name: Photos
+            place: 0
+            options:
+              mode: list
+
+    # ── PÁGINAS ───────────────────────────────────────────────────────────────
+    # Ordem: páginas de lista (moduleID: 0, visible: true) ANTES das de detalhe
+    page:
+      # ════════════════════════════════════════════════
+      # LISTAS (visible: true, moduleID: 0)
+      # ════════════════════════════════════════════════
+
+      # ── Lista: Locais ─────────────────────────────
+      - blocks:
+          - blockid: 1
+            kind: RecordList
+            title: Locais
+            options:
+              module: Local
+              page: RecordPageForModuleLocal
+              fields:
+                - {name: Name}
+                - {name: Sector}
+                - {name: Floor}
+              perPage: 20
+              prefilter: ""
+              presort: Name ASC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: Locais
+        moduleID: 0
+        namespaceID: manutencao-ac
+        selfID: 0
+        title: Locais
+        visible: true
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 80], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Lista: Técnicos ───────────────────────────
+      - blocks:
+          - blockid: 1
+            kind: RecordList
+            title: Técnicos
+            options:
+              module: Tecnico
+              page: RecordPageForModuleTecnico
+              fields:
+                - {name: Name}
+                - {name: Email}
+                - {name: Phone}
+                - {name: Specialty}
+              perPage: 20
+              prefilter: ""
+              presort: Name ASC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: Tecnicos
+        moduleID: 0
+        namespaceID: manutencao-ac
+        selfID: 0
+        title: Técnicos
+        visible: true
+        weight: 1
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 80], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Lista: Equipamentos ───────────────────────
+      - blocks:
+          - blockid: 1
+            kind: RecordList
+            title: Equipamentos
+            options:
+              module: Equipamento
+              page: RecordPageForModuleEquipamento
+              fields:
+                - {name: Name}
+                - {name: Brand}
+                - {name: Model}
+                - {name: Status}
+                - {name: LocalId}
+              perPage: 20
+              prefilter: ""
+              presort: createdAt DESC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: Equipamentos
+        moduleID: 0
+        namespaceID: manutencao-ac
+        selfID: 0
+        title: Equipamentos
+        visible: true
+        weight: 2
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 80], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Lista: Manutenções (com chart de status) ───
+      - blocks:
+          - blockid: 1
+            kind: RecordList
+            title: Manutenções
+            options:
+              module: Manutencao
+              page: RecordPageForModuleManutencao
+              fields:
+                - {name: EquipamentoId}
+                - {name: TecnicoId}
+                - {name: Type}
+                - {name: Status}
+                - {name: ScheduledDate}
+                - {name: Cost}
+              perPage: 20
+              prefilter: ""
+              presort: ScheduledDate DESC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: Chart
+            title: Por Status
+            options:
+              chart: ManutencoesPorStatus   # handle do chart (não o name)
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 3
+            kind: Chart
+            title: Por Tipo
+            options:
+              chart: ManutencoesPorTipo
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: Manutencoes
+        moduleID: 0
+        namespaceID: manutencao-ac
+        selfID: 0
+        title: Manutenções
+        visible: true
+        weight: 3
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 36, 80], meta: {}}  # lista 75%
+              - {blockID: 2, xywh: [36, 0, 12, 40], meta: {}} # chart status 25% topo
+              - {blockID: 3, xywh: [36, 40, 12, 40], meta: {}} # chart tipo 25% baixo
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ════════════════════════════════════════════════
+      # DETALHES (visible: false, moduleID: Handle)
+      # ════════════════════════════════════════════════
+
+      # ── Detalhe: Local ────────────────────────────
+      - blocks:
+          - blockid: 1
+            kind: Record
+            title: Dados do Local
+            options:
+              fields:
+                - {name: Name}
+                - {name: Floor}
+                - {name: Sector}
+                - {name: Address}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: RecordList
+            title: Equipamentos neste Local
+            options:
+              module: Equipamento
+              page: RecordPageForModuleEquipamento
+              fields:
+                - {name: Name}
+                - {name: Model}
+                - {name: Status}
+              perPage: 20
+              prefilter: LocalId = ${recordID}  # LocalId é o name do campo FK em Equipamento
+              presort: Name ASC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: RecordPageForModuleLocal
+        moduleID: Local
+        namespaceID: manutencao-ac
+        selfID: Locais          # handle da página de lista de Locais
+        title: 'Record page for module "Local"'
+        visible: false
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 40], meta: {}}
+              - {blockID: 2, xywh: [0, 40, 48, 70], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Detalhe: Técnico ──────────────────────────
+      - blocks:
+          - blockid: 1
+            kind: Record
+            title: Dados do Técnico
+            options:
+              fields:
+                - {name: Name}
+                - {name: Email}
+                - {name: Phone}
+                - {name: Specialty}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: RecordList
+            title: Manutenções deste Técnico
+            options:
+              module: Manutencao
+              page: RecordPageForModuleManutencao
+              fields:
+                - {name: EquipamentoId}
+                - {name: Type}
+                - {name: Status}
+                - {name: ScheduledDate}
+                - {name: Cost}
+              perPage: 20
+              prefilter: TecnicoId = ${recordID}  # TecnicoId é o name do campo FK em Manutencao
+              presort: ScheduledDate DESC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: RecordPageForModuleTecnico
+        moduleID: Tecnico
+        namespaceID: manutencao-ac
+        selfID: Tecnicos
+        title: 'Record page for module "Tecnico"'
+        visible: false
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 48, 40], meta: {}}
+              - {blockID: 2, xywh: [0, 40, 48, 70], meta: {}}
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Detalhe: Equipamento (com histórico de manutenções) ───────────────
+      - blocks:
+          - blockid: 1
+            kind: Record
+            title: Dados do Equipamento
+            options:
+              fields:
+                - {name: Name}
+                - {name: Brand}
+                - {name: Model}
+                - {name: SerialNo}
+                - {name: Capacity}
+                - {name: Status}
+                - {name: InstallDate}
+                - {name: LocalId}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: Record
+            title: Informações Adicionais
+            options:
+              fields:
+                - {name: Photo}
+                - {name: Notes}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 3
+            kind: RecordList
+            title: Histórico de Manutenções
+            options:
+              module: Manutencao
+              page: RecordPageForModuleManutencao
+              fields:
+                - {name: Type}
+                - {name: Status}
+                - {name: TecnicoId}
+                - {name: ScheduledDate}
+                - {name: CompletedDate}
+                - {name: Cost}
+              perPage: 20
+              prefilter: EquipamentoId = ${recordID}  # EquipamentoId é o name do campo FK em Manutencao
+              presort: ScheduledDate DESC
+              allowExport: true
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: RecordPageForModuleEquipamento
+        moduleID: Equipamento
+        namespaceID: manutencao-ac
+        selfID: Equipamentos
+        title: 'Record page for module "Equipamento"'
+        visible: false
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 36, 60], meta: {}}  # dados principais (75%)
+              - {blockID: 2, xywh: [36, 0, 12, 60], meta: {}} # foto + notes (25%)
+              - {blockID: 3, xywh: [0, 60, 48, 80], meta: {}} # histórico (largura total)
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary
+
+      # ── Detalhe: Manutenção ───────────────────────
+      - blocks:
+          - blockid: 1
+            kind: Record
+            title: Dados da Manutenção
+            options:
+              fields:
+                - {name: EquipamentoId}
+                - {name: TecnicoId}
+                - {name: Type}
+                - {name: Status}
+                - {name: ScheduledDate}
+                - {name: CompletedDate}
+                - {name: Cost}
+                - {name: Duration}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+          - blockid: 2
+            kind: Record
+            title: Diagnóstico e Solução
+            options:
+              fields:
+                - {name: Description}
+                - {name: Solution}
+                - {name: Photos}
+            style:
+              variants: {bodyBg: white, border: primary, headerBg: white, headerText: primary}
+              wrap: {}
+              border: {}
+            xywh: [0, 0, 0, 0]
+            meta: {}
+            description: ""
+        config: {navitem: {expanded: false, icon: null}}
+        handle: RecordPageForModuleManutencao
+        moduleID: Manutencao
+        namespaceID: manutencao-ac
+        selfID: Manutencoes
+        title: 'Record page for module "Manutencao"'
+        visible: false
+        weight: 0
+        pageLayout:
+          - blocks:
+              - {blockID: 1, xywh: [0, 0, 24, 80], meta: {}}  # dados (50% esquerda)
+              - {blockID: 2, xywh: [24, 0, 24, 80], meta: {}} # diagnóstico (50% direita)
+            config:
+              visibility: {expression: "", roles: []}
+              buttons:
+                new: {enabled: true, label: ""}
+                edit: {enabled: true, label: ""}
+                submit: {enabled: true, label: ""}
+                delete: {enabled: true, label: ""}
+                clone: {enabled: true, label: ""}
+                back: {enabled: true, label: ""}
+              usetitle: false
+            handle: primary

@@ -15,7 +15,7 @@
 ## Phases
 
 ### Phase 1: Pesquisa e Documento de Referência
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Extrair e documentar exaustivamente os padrões do Corteza a partir dos arquivos de exemplo (`Case management.yaml` + JSONs de workflow), criando um documento de referência interno que a skill usará como base de conhecimento
 **Requirements**: REQ-01, REQ-02, REQ-03, REQ-09
 **Deliverables**:
@@ -27,7 +27,7 @@
 ---
 
 ### Phase 2: Criação da Skill Principal (corteza-app-builder)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Criar a skill orquestradora em `.agent/skills/corteza-app-builder/SKILL.md` com instruções completas para guiar o design de módulos, páginas e charts
 **Requirements**: REQ-04, REQ-05, REQ-06, REQ-08, REQ-10
 **Deliverables**:
@@ -38,7 +38,7 @@
 ---
 
 ### Phase 3: Templates e Exemplos
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Criar templates YAML reutilizáveis para padrões comuns (módulo simples, módulo com relacionamento, página de lista, página de detalhe, dashboard) e exemplos comentados baseados no Case Management
 **Requirements**: REQ-07, REQ-09
 **Deliverables**:
@@ -48,7 +48,7 @@
 ---
 
 ### Phase 4: Validação e Refinamento
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Testar a skill gerando um app Corteza completo (ex: app de helpdesk ou gestão de clientes) e validar que o YAML gerado é importável — refinando as instruções com base nos problemas encontrados
 **Requirements**: REQ-07, REQ-08
 **Deliverables**:
